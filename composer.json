@@ -1,0 +1,24 @@
+{
+    "name": "3sd/scout",
+    "description": "Scout: automate CiviCRM hosting",
+    "type": "project",
+    "license": "MIT",
+    "authors": [{
+        "name": "Michael McAndrew",
+        "email": "michaelmcandrew@thirdsectordesign.org"
+    }],
+    "require": {
+        "symfony/console": "^3.2",
+        "symfony/dependency-injection": "^3.2",
+        "symfony/yaml": "^3.2",
+        "symfony/config": "^3.2",
+        "twig/twig": "^1.33",
+        "symfony/finder": "^3.2",
+        "symfony/process": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    }
+}

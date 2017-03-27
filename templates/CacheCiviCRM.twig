@@ -1,0 +1,7 @@
+# DOWNLOAD CIVICRM
+echo Caching CiviCRM source files
+{% for file in missingFiles %}
+echo "* civicrm-{{ version }}-{{ file }}..."
+wget https://download.civicrm.org/civicrm-{{ version }}-{{ file }} -q -P {{ config.cache_path }}
+{% endfor %}
+echo CiviCRM source files cached

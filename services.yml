@@ -1,0 +1,9 @@
+services:
+    twig:
+        class: Twig_Environment
+        arguments: ['@twig.loader']
+    twig.loader:
+        class: Twig_Loader_Filesystem
+        arguments: ['%root_dir%/templates']
+    fs:
+        class: Symfony\Component\Filesystem\Filesystem

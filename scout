@@ -1,0 +1,25 @@
+#!/usr/bin/php
+<?php
+require __DIR__.'/vendor/autoload.php';
+use Symfony\Component\Console\Application;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+
+$application = new Application();
+$application->setName('scout: CiviCRM hosting for people that like to share.');
+$container = new ContainerBuilder();
+$container->setParameter('root_dir', __DIR__);
+$loader = new YamlFileLoader($container, new FileLocator(__DIR__));
+$loader->load('services.yml');
+$application->container = $container;
+$application->config['cache_path'] = $_SERVER['HOME'] . '/.scout/cache';
+$application->config['instance_path'] = '/var/www';
+$application->config['civicrm_source_files'] = ['drupal.tar.gz', 'wordpress.zip', 'joomla.zip', 'l10n.tar.gz'];
+$application->config['git']['user'] = '3sd';
+$application->add(new Command\UpgradeCommand());
+$application->add(new Command\CacheCiviCRMCommand());
+$application->add(new Command\CreateProjectCommand());
+$application->add(new Command\DumpCommand());
+$application->run();
