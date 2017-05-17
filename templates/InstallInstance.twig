@@ -86,7 +86,7 @@ cv -q api domain.create \
 
 cv -q api email.create \
   id=1 \
-  email={% if attribute(project, 'site-email') %}{{ attribute(project, 'site-email') }}{% else %}{{ config.git.email }}{% endif %}
+  email={% if attribute(project, 'site-email') %}{{ attribute(project, 'site-email') }}{% else %}{{ config.git_email }}{% endif %}
 
 cv -q api mailSettings.create \
   id=1 domain=3sd.io

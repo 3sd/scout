@@ -1,6 +1,7 @@
-# CREATE AND CD INTO PROJECT PATH
 cd {{ path }}
+
+grep "^scout-instance\.json$" .gitignore >/dev/null || sudo sed -i -e "\$a\scout-instance.json" .gitignore
+grep "^sites\/\*\/civicrm\.settings\.php$" .gitignore >/dev/null || sudo sed -i -e "\$a\sites/*/civicrm.settings.php" .gitignore
 scout generate project.json {% if full_name %}--full-name='{{ full_name }}' {% endif %} > scout-project.json
-scout generate instance.json --domain='{{ name }}' > scout-instance.json
 echo scout-project.json created.
 git status
