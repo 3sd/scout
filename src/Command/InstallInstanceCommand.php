@@ -22,7 +22,7 @@ class InstallInstanceCommand extends ScoutCommand
         ->setDescription('Install a Scout instance');
     }
 
-    protected function initialize(InputInterface $input)
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->resolveProject($input);
 

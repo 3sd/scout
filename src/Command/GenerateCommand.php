@@ -33,7 +33,7 @@ class GenerateCommand extends ScoutCommand
         // the "--help" option
     }
 
-    protected function initialize(InputInterface $input)
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->resolveProject($input);
     }

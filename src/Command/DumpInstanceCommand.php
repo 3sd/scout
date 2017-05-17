@@ -21,7 +21,7 @@ class DumpInstanceCommand extends ScoutCommand
         ->setDescription('Create a database dump for this instance');
     }
 
-    protected function initialize(InputInterface $input)
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->resolveInstance($input);
 

@@ -20,7 +20,7 @@ class UninstallInstanceCommand extends ScoutCommand
         ->setDescription('Uninstall an installed Scout instance');
     }
 
-    protected function initialize(InputInterface $input)
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->resolveInstance($input);
     }

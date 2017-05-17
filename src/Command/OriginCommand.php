@@ -22,7 +22,7 @@ class OriginCommand extends ScoutCommand
         ->setDescription('synchronise database and files from a remote scout instance');
     }
 
-    protected function initialize(InputInterface $input)
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->resolveInstance($input);
     }

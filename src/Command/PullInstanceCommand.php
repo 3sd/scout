@@ -23,7 +23,7 @@ class PullInstanceCommand extends ScoutCommand
         ->setDescription('synchronise database and files from a remote scout instance');
     }
 
-    protected function initialize(InputInterface $input)
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->resolveInstance($input);
     }
@@ -33,7 +33,6 @@ class PullInstanceCommand extends ScoutCommand
 
         $origin = $this->getOrigin($input->getArgument('origin'));
         $sourceParts =explode(':', $origin->source);
-        var_dump($sourceParts);
         $remote_host = $sourceParts[0];
         $remote_path = $sourceParts[1];
 

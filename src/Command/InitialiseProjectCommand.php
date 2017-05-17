@@ -26,7 +26,7 @@ class InitialiseProjectCommand extends ScoutCommand
         ;
     }
 
-    protected function initialize(InputInterface $input)
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         if (!$input->getArgument('path')) {
             $input->setArgument('path', trim(`pwd`));
