@@ -20,61 +20,53 @@ class CreateProjectCommand extends ScoutCommand
 
         // the short description shown while running "php bin/console list"
 
-        ->addArgument('name|path', InputArgument::REQUIRED, "name: Project name (when it consists of only lowercase alphanumeric and '-')\npath: A non existing path (when it starts with '/' or './').")
-
-        ->addOption('name', null, InputOption::VALUE_REQUIRED, 'Name of project is based on the value of <name|dir>. It can be overridden if desired.')
-
+        ->addArgument('path', InputArgument::REQUIRED, "Path to the root of the project. Will be created. Path should NOT exist. Parent of path SHOULD exist.")
         // TODO allow specifying a major version 4.x, minor version 4.7, or revision 4.7.17.
-        ->addOption('civicrm-version', null, InputOption::VALUE_REQUIRED, 'Version of CiviCRM you would like to use.', file_get_contents('http://latest.civicrm.org/stable.php'))
-        ->addOption('full-name', null, InputOption::VALUE_REQUIRED, 'Full name for this project.', '<name>')
-        ->addOption('cms', null, InputOption::VALUE_REQUIRED, 'The CMS you would like to use (currently only Drupal is supported)', 'Drupal');
-
-      $help[] = "If <info>name|path</info> consist of only lowercase alphanumeric chararcters and '-', Scout will attempt to create a directory for the project with this name in the instance directory.";
-      $help[] = "If <info>name|path</info> starts with a '/' or './', i.e it looks like a path, Scout will attempt to create a directory for the project using the path.";
-
-      $this->setDescription("Create a new Scout project");
-      $this->setHelp("\n".implode("\n\n", $help)."\n");
+        ->addOption('civicrm-version', null, InputOption::VALUE_REQUIRED, 'Version of CiviCRM you would like to use.')
+        ->addOption('full-name', null, InputOption::VALUE_REQUIRED, 'Full name for this project (defaults to the short name)')
+        // ->addOption('cms', null, InputOption::VALUE_REQUIRED, 'The CMS you would like to use.')
+        ->setDescription("Create a new Scout project")
+        ;
     }
 
     protected function initialize(InputInterface $input){
-        if($input->getOption('full-name')=='<name>'){
-            $input->setOption('full-name', '');
-        }
 
     }
 
     protected function prepare(InputInterface $input, OutputInterface $output)
     {
 
-      $fs = $this->getContainer()->get('fs');
-      // If name|path is a single alphanumeric with hyphens
-      if(preg_match("/^[0-9a-z\-]+$/", $input->getArgument('name|path'))){
-        // create the project in the instance_dir
-        $path = $this->getApplication()->config['instance_path'] . DIRECTORY_SEPARATOR . $input->getArgument('name|path');
-        // with the name set to name|path
-        $name = $input->getArgument('name|path');
-      // If name|path looks like a path
-      }elseif(preg_match("/^(\.\/|\/)/", $input->getArgument('name|path'))){
-        // check the parent of the path exists
-        $path = rtrim($input->getArgument('name|path'), '/');
-        preg_match("/(.*)\/.*/", $path, $matches);
-        $parent=$matches[1];
-        if ($parent == ''){
-          $parent = '/';
-        }
-        if(!$fs->exists($parent)){
-          throw new \Exception("Cannot find parent directory {$parent}) for this project.");
-        }
-        // set the name to the last element of the path
-        $name = array_pop(explode(DIRECTORY_SEPARATOR, $path));
-      }else{
-        throw new \Exception("Invalid name|path");
+      $path = rtrim($input->getArgument('path'), '/');
 
+      $pathElements = explode('/', $path);
+
+      // Name is always the last element of the path
+      $name = array_pop($pathElements);
+      if(!preg_match("/^[0-9a-z\-]+$/", $name)){
+        throw new \Exception("'{$name}' is not a valid project name. Only lowercase alphanumeric and dash characters are allowed.");
       }
 
-      if($fs->exists($path)){
-        throw new \Exception("Cannot create project in {$path}: path already exists.");
+      $parentPath = implode('/', $pathElements);
+
+      // If there were no other elements to the path, presume the parent path
+      // is the current directory.
+      if(strlen($parentPath) == 0){
+        $parentPath = trim(`pwd`);
       }
+
+      $absolutePath = realpath($parentPath);
+      if(!$absolutePath){
+        throw new \Exception("Cannot create project '{$name}' in '{$parentPath}'. '{$parentPath}' directory does not exist.");
+      }elseif(!is_dir($absolutePath)){
+        throw new \Exception("Cannot create project '{$name}' in '{$parentPath}'. '{$parentPath}' is not a directory.");
+      }
+
+      $path = "{$absolutePath}/{$name}";
+
+      if(file_exists($path)){
+        throw new \Exception("Cannot create project. '{$path}' already exists.");
+      }
+
       // Download CiviCRM source files if necessary
       $this->subCommand('cache-civicrm', new ArrayInput(array('version' => $input->getOption('civicrm-version'))), $output);
 
@@ -86,7 +78,7 @@ class CreateProjectCommand extends ScoutCommand
         'civicrm_version' => $input->getOption('civicrm-version'),
         'full_name' => $input->getOption('full-name'),
         'files' => ['drupal.tar.gz', 'l10n.tar.gz'],
-        'config' => $this->getApplication()->config
+        'config' => $this->getApplication()->config->getAll()
       ]);
     }
 

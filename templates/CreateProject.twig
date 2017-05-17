@@ -5,11 +5,12 @@ echo Created directory `pwd`
 
 # INITIALISE GIT REPO
 git init
-git remote add origin git@github.com:{{ config.git.user }}/{{ name }}.git
-echo Added remote 'origin git@github.com:{{ config.git.user }}/{{ name }}.git'
+ORIGIN=git@github.com:{{ config.github.org }}/{{ name }}.git
+git remote add origin $ORIGIN
+echo Added remote: \'origin $ORIGIN\'
 
 # PLACE CMS
-drush dl --drupal-project-rename=TEMPDRUPAL -q # uses Drush's cache
+/usr/local/bin/drush dl drupal-7 --drupal-project-rename=TEMPDRUPAL -q # uses Drush's cache
 shopt -s dotglob # Allows us to move hidden files
 mv TEMPDRUPAL/* .
 shopt -u dotglob
@@ -20,20 +21,21 @@ echo Drupal in place
 {% for file in files %}
 tar -xf {{ config.cache_path }}/civicrm-{{ civicrm_version }}-{{ file }} -C sites/all/modules
 {% endfor %}
+mkdir sites/all/civicrm_extensions
 echo CiviCRM in place
 
 # ADD SCOUT PROJECT FILE
-scout dump project.yaml --full-name='{{ full_name|default(name) }}' > scout-project.yaml
+scout generate project.json {% if full_name %}--full-name='{{ full_name }}' {% endif %} > scout-project.json
+echo "scout-instance.json" >> .gitignore
+echo "sites/*/civicrm.settings.php" >> .gitignore
+echo Generated scout-project.json
 
 # INITIAL COMMIT
 DRUPAL_VERSION=`sed -n '2p' CHANGELOG.txt | cut -d ' ' -f 2 | cut -d ',' -f 1`
-COMMIT_MESSAGE="New Scout project: CiviCRM at {{ civicrm_version }}; Drupal at $DRUPAL_VERSION"
+COMMIT_MESSAGE="New Scout project: CiviCRM at {{ civicrm_version }}, Drupal at $DRUPAL_VERSION"
 git add .
 git commit -q -m "$COMMIT_MESSAGE"
-echo "Initial commit to repo with message: '$COMMIT_MESSAGE'"
-
-
+echo "Made initial commit with message: '$COMMIT_MESSAGE'"
 
 # FINISH UP
-echo Your new project is here:
-echo {{ path }}
+echo Your new project is here: {{ path }}

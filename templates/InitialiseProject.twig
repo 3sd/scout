@@ -1,0 +1,6 @@
+# CREATE AND CD INTO PROJECT PATH
+cd {{ path }}
+scout generate project.json {% if full_name %}--full-name='{{ full_name }}' {% endif %} > scout-project.json
+scout generate instance.json --domain='{{ name }}' > scout-instance.json
+echo scout-project.json created.
+git status

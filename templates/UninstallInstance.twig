@@ -1,0 +1,19 @@
+cd {{ path }}
+# Drupal mysql user and databases
+mysql -e "DROP USER '{{ name }}'@'localhost'"
+mysql -e "DROP DATABASE {{ name }}_drupal"
+mysql -e "DROP DATABASE {{ name }}_civicrm"
+echo Dropped database and users
+
+
+# Remove settings files and sites/default/files
+chmod u+w sites/default
+rm -f sites/default/settings.php
+rm -f sites/default/civicrm.settings.php
+rm -fr sites/default/files
+echo Removed files
+chmod u-w sites/default
+rm /etc/nginx/sites-enabled/{{ name }}
+rm /etc/nginx/sites-available/{{ name }}
+echo Removed vhost
+echo Hosts file entry remains

@@ -5,21 +5,75 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Console\Input\InputOption;
 
-
+// Define application
 $application = new Application();
 $application->setName('scout: CiviCRM hosting for people that like to share.');
+
+$application->config = new Config;
+// Configure application
+$application->config->set('scout_path', $_SERVER['HOME'] . '/.scout');
+$application->config->set('cache_path', $_SERVER['HOME'] . '/.scout/cache');
+$application->config->set('dump_path', $_SERVER['HOME'] . '/.scout/dumps');
+$application->config->set('instance_path', '/var/www');
+// $application->config->set('civicrm_source_files', ['drupal.tar.gz', 'wordpress.zip', 'joomla.zip', 'l10n.tar.gz']);
+$application->config->set('civicrm_source_files', ['drupal.tar.gz', 'l10n.tar.gz']);
+$application->config->set('github.org', '3sd');
+$application->config->set('git_name', trim(`git config --get user.name`));
+$application->config->set('git_email', trim(`git config --get user.email`));
+$application->config->set('whoami', trim(`whoami`));
+$application->config->set('fastcgi_pass', 'unix:/run/php/php5.6-fpm.sock');
+
+
+// - get MySQL credentials
+$myCnf = file_get_contents( $_SERVER['HOME'] . '/.my.cnf');
+$invalid = array("!","{","}","~","^");
+$myfile = str_replace($invalid, "", $myCnf);
+$myCnf = parse_ini_string($myCnf,TRUE);
+$application->config->set('mysql.user', $myCnf['client']['user']);
+$application->config->set('mysql.password', $myCnf['client']['password']);
+
+
+// Dependency injection
 $container = new ContainerBuilder();
 $container->setParameter('root_dir', __DIR__);
+$container->setParameter('mysql.user', $application->config->get('mysql.user'));
+$container->setParameter('mysql.password', $application->config->get('mysql.password'));
 $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
 $loader->load('services.yml');
 $application->container = $container;
-$application->config['cache_path'] = $_SERVER['HOME'] . '/.scout/cache';
-$application->config['instance_path'] = '/var/www';
-$application->config['civicrm_source_files'] = ['drupal.tar.gz', 'wordpress.zip', 'joomla.zip', 'l10n.tar.gz'];
-$application->config['git']['user'] = '3sd';
+
+
+// Register commands
 $application->add(new Command\UpgradeCommand());
 $application->add(new Command\CacheCiviCRMCommand());
 $application->add(new Command\CreateProjectCommand());
-$application->add(new Command\DumpCommand());
+$application->add(new Command\InitialiseProjectCommand());
+$application->add(new Command\InstallInstanceCommand());
+$application->add(new Command\DumpInstanceCommand());
+$application->add(new Command\UninstallInstanceCommand());
+$application->add(new Command\PullInstanceCommand());
+$application->add(new Command\OriginCommand());
+$application->add(new Command\GenerateCommand());
+
+// Add global options
+$application->getDefinition()->addOptions([
+    new InputOption('--dry-run', '-d', InputOption::VALUE_NONE, 'Prints commands to the screen instead of executing them.')
+]);
+
+// Run application
 $application->run();
+
+class Config {
+  private $params = [];
+  function get($param){
+    return $this->params[$param];
+  }
+  function getAll(){
+    return $this->params;
+  }
+  function set($param, $value){
+    return $this->params[$param] = $value;
+  }
+}

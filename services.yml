@@ -7,3 +7,6 @@ services:
         arguments: ['%root_dir%/templates']
     fs:
         class: Symfony\Component\Filesystem\Filesystem
+    mysql:
+        class: mysqli
+        arguments: ['localhost', '%mysql.user%', '%mysql.password%']

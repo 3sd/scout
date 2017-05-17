@@ -1,27 +1,44 @@
-# Concepts
+# Quick start
 
-The following concepts are core to Scout.
+Create a local site at http://example
 
-## Projects
+```
+scout create-project /var/www/example
+cd /var/www/example
+scout install-instance
+```
+
+# Projects
 
 Projects define the code needed to run a CiviCRM site.
 
-They are git repositories with a scout-project.yaml file at the root level.
+They are git repositories with a `scout-project.json` file at the root level.
+
+Projects can be created with the `create-project` command.
 
 Projects have one or more instances.
 
-## Instances
+# Instances
 
-Instances are instances of projects.
+An instance of a project is a git checkout of that project.
 
-Once created, they can be installed. Instances can specify other instances of the same project as origins. Instances can pull the database and files from origins. A production site should never have an origin defined as this would allow the production site to be overriden.
+Instances can be installed with the `install-instance` command. Installing an instance runs the CMS and CiviCRM installation scripts (which create the relevant settings/configuration files and create and populate the databases) and attempts to configure your web-server to serve the project.
 
-Scout instances have a scout-instance.yaml file in their root directory. This file is gitignored.
+Different instances of the same project can be related to each other in order for you to synchronise the database and files from one instance to another.
+
+Scout tries to make it easy to synchronise from one site to another, but hard to unintentionally overwrite production data. Synchronisation happens via a 'pull' mechanism, i.e. from a remote site to a local site and instances can only synchronise from pre-defined origins.
+
+For example a scout project can have a production instance with no origins defined and a development instance with the production instance defined as an origin. It this set up, one can synchronise databases and files from the production instance to the development instance but one cannot accidentally pull from the development to the production instance as the development instance is not defined as an origin on the production instance. Hence the chances of accidentally overwriting production data are reduced.
+
+Scout instances have a scout-instance.json file in their root directory, which defines related instances.
 
 ```scout.yaml
 origins:
   prod: "p2:/var/www/3sd"
 ```
+
+# Synchronisation
+
 
 ## Controllers
 

@@ -1,0 +1,107 @@
+# CD TO PROJECT DIRECTORY
+cd {{ path }}
+
+# ADD TO HOSTS FILE
+grep "#scout" /etc/hosts >/dev/null || sudo sed -i -e "\$a\#scout" /etc/hosts
+grep "127.0.0.1 {{ domain }}" /etc/hosts >/dev/null || sudo sed -i "/#scout/a 127.0.0.1 {{ domain }}" /etc/hosts
+#    Maybe add a '$' here --^ to avoid 3sd-wp matching 3sd
+echo Added {{ domain }} to /etc/hosts
+
+# ADD VHOST
+scout generate vhost > /etc/nginx/sites-available/{{ name }}
+ln -s ../sites-available/{{ name }} /etc/nginx/sites-enabled/{{ name }}
+echo Added vhost at /etc/nginx/sites-available/{{ name }} for http://{{ domain }}
+
+# RESTART NGINX
+sudo service nginx restart
+echo Restarted nginx
+
+# CREATE DATABASES
+{% for db in dbs_to_create %}
+mysql -e "CREATE DATABASE {{ db }}"
+{% endfor %}
+mysql -e "GRANT ALL PRIVILEGES ON \`{{ name }}\_%\`.* TO '{{ name }}'@'localhost'  IDENTIFIED BY '{{ mysql_password }}'"
+echo Created databases
+
+# INSTALL DRUPAL
+chmod u+w sites/default
+/usr/local/bin/drush site-install \
+  --db-url=mysql://{{ name }}:{{ mysql_password }}@localhost/{{ name }}_drupal \
+  --site-name="{% if attribute(project, 'full-name') %}{{ attribute(project, 'full-name') }}{% else %}{{ name }}{% endif %}" \
+  --site-mail={% if attribute(project, 'site-email') %}{{ attribute(project, 'site-email') }}{% else %}{{ config.git_email }}{% endif %} \
+  --account-name="{{ config.git_name }}" \
+  --account-mail={{ config.git_email }} \
+  --account-pass={{ user_password }} \
+  -y -q
+echo Installed Drupal
+echo Created admin account \'{{ config.git_name }}\' with email \'{{ config.git_email }}\' and password \'{{ user_password }}\'
+
+{% if install_civicrm %}
+# INSTALL CIVICRM
+# TODO better define drush command
+chmod u+w sites/default
+/usr/local/bin/drush civicrm-install \
+--dbname={{ name }}_civicrm \
+--include={{ path }}/sites/all/modules/civicrm/drupal/drush \
+--dbpass={{ mysql_password }} \
+--dbhost=localhost:3306 \
+--dbuser={{ name }} \
+--site_url={{ domain }} > /dev/null 2>&1
+chmod u-w sites/default
+echo Installed CiviCRM
+
+{% endif %}
+# SET FILE PERMISSIONS
+sudo chown -R {{ config.whoami }}:www-data .
+sudo chmod ug+w sites/all/civicrm_extensions sites/default/files/*
+sudo setfacl -R -m user:{{ config.whoami }}:rwX,default:user:{{ config.whoami }}:rwX,user:www-data:rwX,default:user:www-data:rwX \
+  sites/default/files sites/all/civicrm_extensions
+echo Set file permissions
+
+# POST INSTALL CONFIG - DRUPAL
+/usr/local/bin/drush en views_ui webform -y -q
+
+{% if install_civicrm %}
+/usr/local/bin/drush webform_civicrm -y -q
+{% endif %}
+/usr/local/bin/drush dis overlay -y -q
+echo Post install Drupal config done
+
+{% if install_civicrm %}
+# POST INSTALL CONFIG - CIVICRM
+
+# 4.6 compatible
+# cv -q api job.execute
+# cv -q api setting.create extensionsURL=http://{{ domain }}/sites/all/civicrm_extensions
+# cv -q api setting.create extensionsDir={{ path }}/sites/all/civicrm_extensions
+
+# Set extensions dir and url - not 4.6 compatible
+cv -q api setting.create \
+ extensionsDir=[cms.root]/sites/all/civicrm_extensions \
+ extensionsURL=[cms.root]/sites/all/civicrm_extensions
+
+cv -q api domain.create \
+  id=1 \
+  name={% if attribute(project, 'full-name') %}{{ attribute(project, 'full-name') }}{% else %}{{ name }}{% endif %} \
+
+cv -q api email.create \
+  id=1 \
+  email={% if attribute(project, 'site-email') %}{{ attribute(project, 'site-email') }}{% else %}{{ config.git.email }}{% endif %}
+
+cv -q api mailSettings.create \
+  id=1 domain=3sd.io
+
+cv -q api Job.execute
+
+FROM_EMAIL_OV_ID=`cv api OptionValue.getvalue return=id option_group_id=from_email_address --out=pretty`
+cv -q api OptionValue.create id=$FROM_EMAIL_OV_ID label="\"{{ name }}\" <{{ name }}@3sd.io>"
+
+# set cron job
+echo "MAILTO=\"\"
+*/5 * * * * {{ config.whoami }} `which drush` -u 1 -r /var/www/{{ name }} cvapi Job.execute" 1> /dev/null | sudo tee /etc/cron.d/scout_{{ name }}
+echo Post install CiviCRM config done
+
+{% endif %}
+# ADD SCOUT INSTANCE FILE
+scout generate instance.json {% if domain %}--domain='{{ domain }}' {% endif %} > scout-instance.json
+echo Generated scout-instance.json
