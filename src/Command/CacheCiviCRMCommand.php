@@ -21,6 +21,7 @@ class CacheCiviCRMCommand extends ScoutCommand
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output)
+    {
       if(!$input->getArgument('version')){
         $input->setArgument('version', $this->getLatestCiviCRMVersion());
       }

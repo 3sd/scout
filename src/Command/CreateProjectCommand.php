@@ -30,7 +30,7 @@ class CreateProjectCommand extends ScoutCommand
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output)
-
+    {
     }
 
     protected function prepare(InputInterface $input, OutputInterface $output)

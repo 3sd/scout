@@ -79,8 +79,8 @@ class GenerateCommand extends ScoutCommand
     public function generateProjectJson($fullName)
     {
         $json['contacts'][] = [
-            'name' => $this->getApplication()->config->get('git.name'),
-            'email' => $this->getApplication()->config->get('git.email'),
+            'name' => $this->getApplication()->config->get('git_name'),
+            'email' => $this->getApplication()->config->get('git_email'),
             'roles' => ['System administrator'],
         ];
 
