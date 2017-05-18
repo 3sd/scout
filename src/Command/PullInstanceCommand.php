@@ -36,6 +36,11 @@ class PullInstanceCommand extends ScoutCommand
         $remote_host = $sourceParts[0];
         $remote_path = $sourceParts[1];
 
+        // TODO implement `scout status --is-instance` command which returns 1 if no instance is found
+        exec("ssh {$remote_host} stat {$remote_path}/scout-instance.json", $output, $return_var);
+        if($return_var != 0){
+            throw new \Exception ("Could not find origin: {$origin->source}");
+        }
 
         $twig = $this->getContainer()->get('twig');
         $template = $twig->load('PullInstance.twig');
