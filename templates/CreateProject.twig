@@ -10,7 +10,7 @@ git remote add origin $ORIGIN
 echo Added remote: \'origin $ORIGIN\'
 
 # PLACE CMS
-/usr/local/bin/drush dl drupal-7 --drupal-project-rename=TEMPDRUPAL -q # uses Drush's cache
+drush dl drupal-7 --drupal-project-rename=TEMPDRUPAL -q # uses Drush's cache
 shopt -s dotglob # Allows us to move hidden files
 mv TEMPDRUPAL/* .
 shopt -u dotglob

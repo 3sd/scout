@@ -25,7 +25,7 @@ echo Created databases
 
 # INSTALL DRUPAL
 chmod u+w sites/default
-/usr/local/bin/drush site-install \
+drush site-install \
   --db-url=mysql://{{ name }}:{{ mysql_password }}@localhost/{{ name }}_drupal \
   --site-name="{% if attribute(project, 'full-name') %}{{ attribute(project, 'full-name') }}{% else %}{{ name }}{% endif %}" \
   --site-mail={% if attribute(project, 'site-email') %}{{ attribute(project, 'site-email') }}{% else %}{{ config.git_email }}{% endif %} \
@@ -40,7 +40,7 @@ echo Created admin account \'{{ config.git_name }}\' with email \'{{ config.git_
 # INSTALL CIVICRM
 # TODO better define drush command
 chmod u+w sites/default
-/usr/local/bin/drush civicrm-install \
+drush civicrm-install \
 --dbname={{ name }}_civicrm \
 --include={{ path }}/sites/all/modules/civicrm/drupal/drush \
 --dbpass={{ mysql_password }} \
@@ -59,12 +59,12 @@ sudo setfacl -R -m user:{{ config.whoami }}:rwX,default:user:{{ config.whoami }}
 echo Set file permissions
 
 # POST INSTALL CONFIG - DRUPAL
-/usr/local/bin/drush en views_ui webform -y -q
+drush en views_ui webform -y -q
 
 {% if install_civicrm %}
-/usr/local/bin/drush webform_civicrm -y -q
+drush webform_civicrm -y -q
 {% endif %}
-/usr/local/bin/drush dis overlay -y -q
+drush dis overlay -y -q
 echo Post install Drupal config done
 
 {% if install_civicrm %}
