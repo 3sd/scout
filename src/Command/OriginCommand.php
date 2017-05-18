@@ -15,8 +15,8 @@ class OriginCommand extends ScoutCommand
         // the name of the command (the part after "bin/console")
         ->setName('origin')
 
-        ->addArgument('action', InputArgument::REQUIRED, "'add' or 'remove', to add or remove an origin.")
-        ->addArgument('name', InputArgument::REQUIRED, "An origin, as defined in the this intstances 'scout-instance.json' file.")
+        ->addArgument('action', InputArgument::OPTIONAL, "'add' or 'remove', to add or remove an origin.")
+        ->addArgument('name', InputArgument::OPTIONAL, "An origin, as defined in the this intstances 'scout-instance.json' file.")
         ->addArgument('source', InputArgument::OPTIONAL, "An origin, as defined in the this intstances 'scout-instance.json' file.")
         ->addInstanceOption()
         ->setDescription('synchronise database and files from a remote scout instance');
@@ -36,7 +36,9 @@ class OriginCommand extends ScoutCommand
         // if (!realpath($instanceFile)) {
         //     throw new \Exception("Could not find a scout-instance.json file.");
         // }
-
+        if(!$input->getArgument('action')){
+            $this->showOrigins();
+        }
 
         switch ($input->getArgument('action')) {
 
@@ -49,6 +51,16 @@ class OriginCommand extends ScoutCommand
                 $this->rmOrigin($input, $output);
                 break;
             }
+        }
+    }
+
+    private function showOrigins(){
+        if(count($this->instance->origins)){
+            foreach($this->instance->origins as $origin){
+                echo "{$origin->name}\t{$origin->source}\n";
+            }
+        }else{
+            echo "No origins defined\n";
         }
     }
 
