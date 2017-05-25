@@ -53,6 +53,7 @@ $application->add(new Command\InitialiseProjectCommand());
 $application->add(new Command\InstallInstanceCommand());
 $application->add(new Command\DumpInstanceCommand());
 $application->add(new Command\UninstallInstanceCommand());
+$application->add(new Command\SyncInstanceCommand());
 $application->add(new Command\PullInstanceCommand());
 $application->add(new Command\OriginCommand());
 $application->add(new Command\GenerateCommand());

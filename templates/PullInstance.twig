@@ -1,11 +1,1 @@
-echo Synchronising database and files from {{remote_host}}:{{remote_path}}...
-ssh {{remote_host}} scout dump -i {{remote_path}}
-rsync {{remote_host}}:.scout/dumps/{{name}}_*.sql {{config.dump_path}}
-rsync -a {{remote_host}}:{{remote_path}}/sites/default/files/* {{path}}/sites/default/files
-mysql -e "drop database {{name}}_drupal"
-mysql -e "drop database {{name}}_civicrm"
-mysql -e "create database {{name}}_drupal"
-mysql -e "create database {{name}}_civicrm"
-mysql {{name}}_civicrm < {{config.dump_path}}/{{name}}_civicrm.sql
-mysql {{name}}_drupal < {{config.dump_path}}/{{name}}_drupal.sql
-echo Done
+ssh {{remote_host}} git -C {{remote_path}} pull
