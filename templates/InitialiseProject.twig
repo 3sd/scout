@@ -1,8 +1,10 @@
 cd {{ path }}
 
+# These can also be found in create project and should be factored out somehow to avoid stuff getting out of sync
 grep "^scout-instance\.json$" .gitignore >/dev/null || sudo sed -i -e "\$a\scout-instance.json" .gitignore
 grep "^sites\/all\/civicrm_extensions\/cache$" .gitignore >/dev/null || sudo sed -i -e "\$a\sites/all/civicrm_extensions/cache" .gitignore
 grep "^sites\/\*\/civicrm\.settings\.php$" .gitignore >/dev/null || sudo sed -i -e "\$a\sites/*/civicrm.settings.php" .gitignore
+
 scout generate project.json {% if full_name %}--full-name='{{ full_name }}' {% endif %} > scout-project.json
 echo scout-project.json created.
 git status

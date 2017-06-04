@@ -28,6 +28,7 @@ echo CiviCRM in place
 scout generate project.json {% if full_name %}--full-name='{{ full_name }}' {% endif %} > scout-project.json
 echo "scout-instance.json" >> .gitignore
 echo "sites/*/civicrm.settings.php" >> .gitignore
+echo "sites/all/civicrm_extensions/cache" >> .gitignore
 echo Generated scout-project.json
 
 # INITIAL COMMIT
