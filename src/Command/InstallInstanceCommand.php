@@ -33,8 +33,6 @@ class InstallInstanceCommand extends ScoutCommand
 
     protected function prepare(InputInterface $input, OutputInterface $output)
     {
-
-        
         $this->installCiviCRM = realpath("{$this->path}/sites/all/modules/civicrm");
         // Check that settings files do not exist
         $vhostFilesToCreate = ["/etc/nginx/sites-enabled/{$this->name}", "/etc/nginx/sites-available/{$this->name}"];

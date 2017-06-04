@@ -24,11 +24,15 @@ tar -xf {{ config.cache_path }}/civicrm-{{ civicrm_version }}-{{ file }} -C site
 mkdir sites/all/civicrm_extensions
 echo CiviCRM in place
 
-# ADD SCOUT PROJECT FILE
-scout generate project.json {% if full_name %}--full-name='{{ full_name }}' {% endif %} > scout-project.json
+
+# ADD ENTRIES TO GIT IGNORE
 echo "scout-instance.json" >> .gitignore
 echo "sites/*/civicrm.settings.php" >> .gitignore
 echo "sites/all/civicrm_extensions/cache" >> .gitignore
+echo Updated .gitignore
+
+# ADD SCOUT PROJECT FILE
+scout generate project.json {% if full_name %}--full-name='{{ full_name }}' {% endif %} > scout-project.json
 echo Generated scout-project.json
 
 # INITIAL COMMIT

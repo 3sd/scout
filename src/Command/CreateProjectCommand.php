@@ -31,6 +31,9 @@ class CreateProjectCommand extends ScoutCommand
 
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
+      if(!$input->getOption('civicrm-version')){
+        $input->setOption('civicrm-version', $this->getLatestCiviCRMVersion());
+      }
     }
 
     protected function prepare(InputInterface $input, OutputInterface $output)

@@ -33,8 +33,7 @@ drush site-install \
   --account-mail={{ config.git_email }} \
   --account-pass={{ user_password }} \
   -y -q
-echo Installed Drupal
-echo Created admin account \'{{ config.git_name }}\' with email \'{{ config.git_email }}\' and password \'{{ user_password }}\'
+echo Installed Drupal with admin account \'{{ config.git_name }}\' with email \'{{ config.git_email }}\' and password \'{{ user_password }}\'
 
 {% if install_civicrm %}
 # INSTALL CIVICRM
