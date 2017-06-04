@@ -58,17 +58,15 @@ sudo setfacl -R -m user:{{ config.whoami }}:rwX,default:user:{{ config.whoami }}
   sites/default/files sites/all/civicrm_extensions
 echo Set file permissions
 
-# POST INSTALL CONFIG - DRUPAL
-drush en views_ui webform -y -q
-
-{% if install_civicrm %}
-drush webform_civicrm -y -q
-{% endif %}
+# POST INSTALL CONFIG: DRUPAL
+drush en views_ui webform module_filter -y -q
 drush dis overlay -y -q
 echo Post install Drupal config done
 
 {% if install_civicrm %}
-# POST INSTALL CONFIG - CIVICRM
+# POST INSTALL CONFIG: CIVICRM
+
+drush en webform_civicrm -y -q
 
 # 4.6 compatible
 # cv -q api job.execute
