@@ -7,4 +7,8 @@ grep "^sites\/\*\/civicrm\.settings\.php$" .gitignore >/dev/null || sudo sed -i 
 
 scout generate project.json {% if full_name %}--full-name='{{ full_name }}' {% endif %} > scout-project.json
 echo scout-project.json created.
-git status
+git init
+MESSAGE="Commit scout-project.json and updated .gitignore in current repo"
+git add scout-project.json .gitignore
+git commit -q -m "${MESSAGE}"
+echo "Git commit with message: $MESSAGE"
