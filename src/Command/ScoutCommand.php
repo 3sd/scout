@@ -18,6 +18,8 @@ class ScoutCommand extends Command
 
         return $this;
     }
+
+    // TODO: Why do we have resolveproject and resolveinstance
     protected function resolveproject(InputInterface $input)
     {
         $originalPath = $input->getOption('project-path');
@@ -40,6 +42,9 @@ class ScoutCommand extends Command
 
         $this->path = $path;
         $this->name = end($pathElements);
+        // create db name by replacing - with _ (debatable whether this is
+        // better than just removing the dashes
+        $this->dbName = str_replace('-', '_', $this->name);
         $this->project = json_decode(file_get_contents($projectFile));
     }
 
@@ -71,6 +76,9 @@ class ScoutCommand extends Command
 
         $this->path = $path;
         $this->name = end($pathElements);
+        // create db name by replacing - with _ (debatable whether this is
+        // better than just removing the dashes
+        $this->dbName = str_replace('-', '_', $this->name);
         $this->instance = json_decode(file_get_contents($instanceJsonFile));
     }
 
@@ -137,7 +145,7 @@ class ScoutCommand extends Command
 
     protected function getOrigin($originName){
         if(!count($this->instance->origins)){
-            throw new \Exception("No origins defined.");    
+            throw new \Exception("No origins defined.");
         }
         foreach($this->instance->origins as $origin){
             if($origin->name == $originName){

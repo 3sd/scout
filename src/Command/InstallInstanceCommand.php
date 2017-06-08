@@ -33,7 +33,10 @@ class InstallInstanceCommand extends ScoutCommand
 
     protected function prepare(InputInterface $input, OutputInterface $output)
     {
+        // A variable to decide whether we should install CiviCRM
         $this->installCiviCRM = realpath("{$this->path}/sites/all/modules/civicrm");
+
+
         // Check that settings files do not exist
         $vhostFilesToCreate = ["/etc/nginx/sites-enabled/{$this->name}", "/etc/nginx/sites-available/{$this->name}"];
         $existingvhostFiles = [];
@@ -70,16 +73,14 @@ class InstallInstanceCommand extends ScoutCommand
             }
         }
 
-
-
         // Check that the databases do not already exist
-        $dbsToCreate[] = "{$this->name}_drupal";
+        $dbsToCreate[] = "{$this->dbName}_drupal";
         if($this->installCiviCRM){
-            $dbsToCreate[] = "{$this->name}_civicrm";
+            $dbsToCreate[] = "{$this->dbName}_civicrm";
         }
         $existingDbs = [];
         $mysql = $this->getContainer()->get('mysql');
-        $result = $mysql->query("SHOW DATABASES LIKE '{$this->name}_%'");
+        $result = $mysql->query("SHOW DATABASES LIKE '{$this->dbName}_%'");
         foreach($result->fetch_all() as $db){
             if(in_array($db[0], $dbsToCreate)){
                 $existingDbs[] = $db[0];
@@ -96,6 +97,7 @@ class InstallInstanceCommand extends ScoutCommand
         $this->commands[] = $template->render([
             'path' => $this->path,
             'name' => $this->name,
+            'db_name' => $this->dbName,
             'install_civicrm' => $this->installCiviCRM,
             'project' => $this->project,
             'domain' => $input->getOption('domain'),

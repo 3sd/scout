@@ -20,13 +20,13 @@ echo Restarted nginx
 {% for db in dbs_to_create %}
 mysql -e "CREATE DATABASE {{ db }}"
 {% endfor %}
-mysql -e "GRANT ALL PRIVILEGES ON \`{{ name }}\_%\`.* TO '{{ name }}'@'localhost'  IDENTIFIED BY '{{ mysql_password }}'"
+mysql -e "GRANT ALL PRIVILEGES ON \`{{ db_name }}\_%\`.* TO '{{ db_name }}'@'localhost'  IDENTIFIED BY '{{ mysql_password }}'"
 echo Created databases
 
 # INSTALL DRUPAL
 chmod u+w sites/default
 drush site-install \
-  --db-url=mysql://{{ name }}:{{ mysql_password }}@localhost/{{ name }}_drupal \
+  --db-url=mysql://{{ db_name }}:{{ mysql_password }}@localhost/{{ db_name }}_drupal \
   --site-name="{% if attribute(project, 'full-name') %}{{ attribute(project, 'full-name') }}{% else %}{{ name }}{% endif %}" \
   --site-mail={% if attribute(project, 'site-email') %}{{ attribute(project, 'site-email') }}{% else %}{{ config.git_email }}{% endif %} \
   --account-name="{{ config.git_name }}" \
@@ -40,11 +40,11 @@ echo Installed Drupal with admin account \'{{ config.git_name }}\' with email \'
 # TODO better define drush command
 chmod u+w sites/default
 drush civicrm-install \
---dbname={{ name }}_civicrm \
+--dbname={{ db_name }}_civicrm \
 --include={{ path }}/sites/all/modules/civicrm/drupal/drush \
 --dbpass={{ mysql_password }} \
 --dbhost=localhost:3306 \
---dbuser={{ name }} \
+--dbuser={{ db_name }} \
 --site_url={{ domain }} > /dev/null 2>&1
 chmod u-w sites/default
 echo Installed CiviCRM

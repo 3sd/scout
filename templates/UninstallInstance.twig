@@ -1,8 +1,8 @@
 cd {{ path }}
 # Drupal mysql user and databases
-mysql -e "DROP USER '{{ name }}'@'localhost'"
-mysql -e "DROP DATABASE {{ name }}_drupal"
-mysql -e "DROP DATABASE {{ name }}_civicrm"
+mysql -e "DROP USER '{{ db_name }}'@'localhost'"
+mysql -e "DROP DATABASE {{ db_name }}_drupal"
+mysql -e "DROP DATABASE {{ db_name }}_civicrm"
 echo Dropped database and users
 
 

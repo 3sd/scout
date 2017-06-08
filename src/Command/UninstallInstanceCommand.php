@@ -32,6 +32,7 @@ class UninstallInstanceCommand extends ScoutCommand
         $template = $twig->load('UninstallInstance.twig');
         $this->commands[] = $template->render([
             'name' => $this->name,
+            'db_name' => $this->dbName,
             'path' => $this->path,
         ]);
     }
