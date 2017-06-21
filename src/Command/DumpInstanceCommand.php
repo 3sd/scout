@@ -36,6 +36,7 @@ class DumpInstanceCommand extends ScoutCommand
         $template = $twig->load('DumpInstance.twig');
         $this->commands[] = $template->render([
             'name' => $this->name,
+            'db_name' => $this->dbName,
             'dump_civicrm' => $this->dumpCiviCRM,
             'config' => $this->getApplication()->config->getAll()
         ]);

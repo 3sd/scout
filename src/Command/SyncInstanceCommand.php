@@ -46,6 +46,7 @@ class SyncInstanceCommand extends ScoutCommand
         $template = $twig->load('SyncInstance.twig');
         $this->commands[] = $template->render([
             'name' => $this->name,
+            'db_name' => $this->dbName,
             'path' => $this->path,
             'remote_host' => $remote_host,
             'remote_path' => $remote_path,

@@ -1,4 +1,4 @@
-mysqldump {{name}}_drupal > {{config.dump_path}}/{{name}}_drupal.sql
+mysqldump {{db_name}}_drupal > {{config.dump_path}}/{{db_name}}_drupal.sql
 {% if dump_civicrm %}
-mysqldump {{name}}_civicrm > {{config.dump_path}}/{{name}}_civicrm.sql
+mysqldump {{db_name}}_civicrm > {{config.dump_path}}/{{db_name}}_civicrm.sql
 {% endif %}
