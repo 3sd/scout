@@ -1,6 +1,6 @@
 echo Synchronising database and files from {{remote_host}}:{{remote_path}}...
 ssh {{remote_host}} scout dump -i {{remote_path}}
-rsync {{remote_host}}:.scout/dumps/{{name}}_*.sql {{config.dump_path}}
+rsync {{remote_host}}:.scout/dumps/{{db_name}}_*.sql {{config.dump_path}}
 rsync -a {{remote_host}}:{{remote_path}}/sites/default/files/* {{path}}/sites/default/files
 mysql -e "drop database {{db_name}}_drupal"
 mysql -e "drop database {{db_name}}_civicrm"
