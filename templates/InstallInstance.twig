@@ -94,8 +94,7 @@ FROM_EMAIL_OV_ID=`cv api OptionValue.getvalue return=id option_group_id=from_ema
 cv -q api OptionValue.create id=$FROM_EMAIL_OV_ID label="\"{{ name }}\" <{{ name }}@3sd.io>"
 
 # set cron job
-echo "MAILTO=\"\"
-*/5 * * * * {{ config.whoami }} `which drush` -u 1 -r /var/www/{{ name }} cvapi Job.execute" 1> /dev/null | sudo tee /etc/cron.d/scout_{{ name }}
+printf "MAILTO=\"\"\n*/5 * * * * {{ config.whoami }} `which drush` -u 1 -r /var/www/{{ name }} cvapi Job.execute\n" | sudo tee /etc/cron.d/scout_{{ name }} 1> /dev/null
 echo Post install CiviCRM config done
 
 {% endif %}
