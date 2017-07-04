@@ -58,6 +58,9 @@ sudo setfacl -R -m user:{{ config.whoami }}:rwX,default:user:{{ config.whoami }}
 echo Set file permissions
 
 # POST INSTALL CONFIG: DRUPAL
+drush vset date_default_timezone 'Europe/London' -y
+drush vset configurable_timezones 0 -y
+drush vset user_default_timezone 0 -y
 drush en views_ui webform module_filter -y -q
 drush dis overlay -y -q
 echo Post install Drupal config done
