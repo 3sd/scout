@@ -38,6 +38,8 @@ class GenerateCommand extends ScoutCommand
         $this->resolveProject($input);
     }
 
+    protected function prepare(InputInterface $input, OutputInterface $output){}
+
     public function execute(InputInterface $input, OutputInterface $output)
     {
         if (!$input->getArgument('file')) {

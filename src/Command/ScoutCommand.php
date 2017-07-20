@@ -6,9 +6,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
-class ScoutCommand extends Command
+abstract class ScoutCommand extends Command
 {
     public $commands = [];
 
@@ -20,7 +19,7 @@ class ScoutCommand extends Command
     }
 
     // TODO: Why do we have resolveproject and resolveinstance
-    protected function resolveproject(InputInterface $input)
+    protected function resolveProject(InputInterface $input)
     {
         $originalPath = $input->getOption('project-path');
         if (!$originalPath = realpath($originalPath)) {
@@ -80,6 +79,8 @@ class ScoutCommand extends Command
         // better than just removing the dashes
         $this->dbName = str_replace('-', '_', $this->name);
         $this->instance = json_decode(file_get_contents($instanceJsonFile));
+
+        $this->civicrmInstalled = $this->isCiviCRMInstalled() == true;
     }
 
     protected function getContainer()
@@ -110,6 +111,13 @@ class ScoutCommand extends Command
         }
     }
 
+    /**
+     * Prepares sets of commands ($this->commands) to be executed.
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    abstract protected function prepare(InputInterface $input, OutputInterface $output);
+
     protected function subCommand($command, $args, $output)
     {
         $command = $this->getApplication()->find('cache-civicrm');
@@ -129,7 +137,7 @@ class ScoutCommand extends Command
               $latest = file_get_contents($latestCache);
             }
             if (!$latest) {
-              throw Exception('Unable to determine the latest version of CiviCRM');
+              throw new \Exception('Unable to determine the latest version of CiviCRM');
             }
             return $latest;
         }
@@ -153,5 +161,9 @@ class ScoutCommand extends Command
             }
         }
         throw new \Exception("Could not find origin '{$originName}'.");
+    }
+
+    protected function isCiviCRMInstalled(){
+        return realpath("$this->path/sites/default/civicrm.settings.php");
     }
 }
