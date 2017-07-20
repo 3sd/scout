@@ -3,9 +3,11 @@ ssh {{remote_host}} scout dump -i {{remote_path}}
 rsync {{remote_host}}:.scout/dumps/{{db_name}}_*.sql {{config.dump_path}}
 rsync -a {{remote_host}}:{{remote_path}}/sites/default/files/* {{path}}/sites/default/files
 mysql -e "drop database {{db_name}}_drupal"
-mysql -e "drop database {{db_name}}_civicrm"
 mysql -e "create database {{db_name}}_drupal"
-mysql -e "create database {{db_name}}_civicrm"
-mysql {{db_name}}_civicrm < {{config.dump_path}}/{{db_name}}_civicrm.sql
 mysql {{db_name}}_drupal < {{config.dump_path}}/{{db_name}}_drupal.sql
+{% if civicrm_installed %}
+  mysql -e "drop database {{db_name}}_civicrm"
+  mysql -e "create database {{db_name}}_civicrm"
+  mysql {{db_name}}_civicrm < {{config.dump_path}}/{{db_name}}_civicrm.sql
+{% endif %}
 echo Done

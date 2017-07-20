@@ -2,10 +2,8 @@
 
 namespace Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SyncInstanceCommand extends ScoutCommand
@@ -33,13 +31,13 @@ class SyncInstanceCommand extends ScoutCommand
 
         $origin = $this->getOrigin($input->getArgument('origin'));
         $sourceParts =explode(':', $origin->source);
-        $remote_host = $sourceParts[0];
-        $remote_path = $sourceParts[1];
+        $remoteHost = $sourceParts[0];
+        $remotePath = $sourceParts[1];
 
         // TODO implement `scout status --is-instance` command which returns 1 if no instance is found
-        exec("ssh {$remote_host} stat {$remote_path}/scout-instance.json", $output, $return_var);
+        exec("ssh {$remoteHost} stat {$remotePath}/scout-instance.json", $output, $return_var);
         if($return_var != 0){
-            throw new \Exception ("Could not find origin: {$origin->source}");
+            throw new \Exception ("Could not find origin: {$origin->source} (looking for {$remoteHost}:{$remotePath}/scout-instance.json)");
         }
 
         $twig = $this->getContainer()->get('twig');
@@ -48,8 +46,9 @@ class SyncInstanceCommand extends ScoutCommand
             'name' => $this->name,
             'db_name' => $this->dbName,
             'path' => $this->path,
-            'remote_host' => $remote_host,
-            'remote_path' => $remote_path,
+            'remote_host' => $remoteHost,
+            'remote_path' => $remotePath,
+            'civicrm_installed' => $this->civicrmInstalled,
             'config' => $this->getApplication()->config->getAll()
         ]);
 
