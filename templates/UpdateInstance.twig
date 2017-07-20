@@ -1,0 +1,14 @@
+cd {{ path }}
+{% include 'SetFilePermissions.twig' %}
+echo [SCOUT] Upgrading Drupal
+drush up -y
+{% if civicrm_installed %}
+  echo [SCOUT] Moving latest CiviCRM into place
+  scout cache-civicrm
+  rm -r {{ path }}/sites/all/modules/civicrm
+  tar -xf {{ config.cache_path }}/civicrm-{{ civicrm_version }}-drupal.tar.gz -C {{ path }}/sites/all/modules
+  tar -xf {{ config.cache_path }}/civicrm-{{ civicrm_version }}-l10n.tar.gz -C {{ path }}/sites/all/modules
+  echo [SCOUT] Upgrading CiviCRM
+  drush civicrm-upgrade-db
+{% endif %}
+{% include 'SetFilePermissions.twig' %}

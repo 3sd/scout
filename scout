@@ -47,7 +47,7 @@ $application->container = $container;
 
 
 // Register commands
-$application->add(new Command\UpgradeCommand());
+$application->add(new Command\UpdateInstanceCommand());
 $application->add(new Command\CacheCiviCRMCommand());
 $application->add(new Command\CreateProjectCommand());
 $application->add(new Command\InitialiseProjectCommand());
