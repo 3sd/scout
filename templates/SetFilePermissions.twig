@@ -1,0 +1,6 @@
+# SET FILE PERMISSIONS
+cd {{ path }}
+echo [SCOUT] Setting file permissions
+sudo chown -R {{ config.whoami }}:www-data .
+sudo chmod ug+w sites/all/civicrm_extensions sites/default/files/*
+sudo setfacl -R -m user:{{ config.whoami }}:rwX,default:user:{{ config.whoami }}:rwX,user:www-data:rwX,default:user:www-data:rwX sites/default/files sites/all/civicrm_extensions

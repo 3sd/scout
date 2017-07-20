@@ -50,12 +50,8 @@ chmod u-w sites/default
 echo Installed CiviCRM
 
 {% endif %}
-# SET FILE PERMISSIONS
-sudo chown -R {{ config.whoami }}:www-data .
-sudo chmod ug+w sites/all/civicrm_extensions sites/default/files/*
-sudo setfacl -R -m user:{{ config.whoami }}:rwX,default:user:{{ config.whoami }}:rwX,user:www-data:rwX,default:user:www-data:rwX \
-  sites/default/files sites/all/civicrm_extensions
-echo Set file permissions
+
+{% include 'SetFilePermissions.twig' %}
 
 # POST INSTALL CONFIG: DRUPAL
 drush vset date_default_timezone 'Europe/London' -y
