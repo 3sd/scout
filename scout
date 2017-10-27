@@ -24,7 +24,10 @@ $application->config->set('git_name', trim(`git config --get user.name`));
 $application->config->set('git_email', trim(`git config --get user.email`));
 $application->config->set('whoami', trim(`whoami`));
 //TODO load from a config file
-$application->config->set('fastcgi_pass', 'unix:/run/php/php5.6-fpm.sock');
+// $application->config->set('fastcgi_pass', 'unix:/run/php/php5.6-fpm.sock');
+$application->config->set('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock');
+// $application->config->set('http_user', trim(`www-data`));
+$application->config->set('httpd_user', trim(`http`));
 
 
 // - get MySQL credentials

@@ -8,12 +8,11 @@ grep "127.0.0.1 {{ domain }}" /etc/hosts >/dev/null || sudo sed -i "/#scout/a 12
 echo Added {{ domain }} to /etc/hosts
 
 # ADD VHOST
-scout generate vhost > /etc/nginx/sites-available/{{ name }}
-ln -s ../sites-available/{{ name }} /etc/nginx/sites-enabled/{{ name }}
-echo Added vhost at /etc/nginx/sites-available/{{ name }} for http://{{ domain }}
+scout generate vhost > /etc/nginx/sites/{{ name }}
+echo Added vhost at /etc/nginx/sites/{{ name }} for http://{{ domain }}
 
 # RESTART NGINX
-sudo service nginx restart
+sudo systemctl restart nginx
 echo Restarted nginx
 
 # CREATE DATABASES

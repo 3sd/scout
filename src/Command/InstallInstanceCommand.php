@@ -49,7 +49,8 @@ class InstallInstanceCommand extends ScoutCommand
         if(!$input->getOption('no-checks')){
 
             // Check that settings files do not exist
-            $vhostFilesToCreate = ["/etc/nginx/sites-enabled/{$this->name}", "/etc/nginx/sites-available/{$this->name}"];
+            // TODO create a scout subfolder for all scout managed sites
+            $vhostFilesToCreate = ["/etc/nginx/sites/{$this->name}"];
             $existingvhostFiles = [];
 
             foreach($vhostFilesToCreate as $vhostFile){

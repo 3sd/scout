@@ -13,7 +13,6 @@ rm -f sites/default/civicrm.settings.php
 rm -fr sites/default/files
 echo Removed files
 chmod u-w sites/default
-rm /etc/nginx/sites-enabled/{{ name }}
-rm /etc/nginx/sites-available/{{ name }}
+rm /etc/nginx/sites/{{ name }}
 echo Removed vhost
 echo Hosts file entry remains
