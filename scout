@@ -27,7 +27,7 @@ $application->config->set('whoami', trim(`whoami`));
 // $application->config->set('fastcgi_pass', 'unix:/run/php/php5.6-fpm.sock');
 $application->config->set('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock');
 // $application->config->set('http_user', trim(`www-data`));
-$application->config->set('httpd_user', trim(`http`));
+$application->config->set('httpd_user', 'http');
 
 
 // - get MySQL credentials
