@@ -10,4 +10,5 @@ mysql {{db_name}}_drupal < {{config.dump_path}}/{{db_name}}_drupal.sql
   mysql -e "create database {{db_name}}_civicrm"
   mysql {{db_name}}_civicrm < {{config.dump_path}}/{{db_name}}_civicrm.sql
 {% endif %}
+{% include 'SetFilePermissions.twig' %}
 echo Done
