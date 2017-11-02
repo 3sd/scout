@@ -5,6 +5,8 @@ rsync -a {{remote_host}}:{{remote_path}}/sites/default/files/* {{path}}/sites/de
 mysql -e "drop database {{db_name}}_drupal"
 mysql -e "create database {{db_name}}_drupal"
 mysql {{db_name}}_drupal < {{config.dump_path}}/{{db_name}}_drupal.sql
+drush -r {{path}} vset preprocess_css 0
+drush -r {{path}} vset preprocess_js 0
 {% if civicrm_installed %}
   mysql -e "drop database {{db_name}}_civicrm"
   mysql -e "create database {{db_name}}_civicrm"
