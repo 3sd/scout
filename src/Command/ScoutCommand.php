@@ -128,42 +128,46 @@ abstract class ScoutCommand extends Command
     {
         // Cache the latest version of CiviCRM for 1 hour
         $latestCache = $this->getApplication()->config->get('cache_path').'/latest-civicrm-version.txt';
-        if (time() - filemtime($latestCache) < 60 * 60) {
+        if (is_file($latestCache) && time() - filemtime($latestCache) < 60 * 60) {
             return file_get_contents($latestCache);
         } else {
             // See if you can retreive the latest version from the web
             $latest = file_get_contents('https://latest.civicrm.org/stable.php');
+            file_put_contents($latestCache, $latest);
             if (!$latest) {
-              $latest = file_get_contents($latestCache);
+                $latest = file_get_contents($latestCache);
             }
             if (!$latest) {
-              throw new \Exception('Unable to determine the latest version of CiviCRM');
+                throw new \Exception('Unable to determine the latest version of CiviCRM');
             }
             return $latest;
         }
     }
 
-    protected function updateInstanceJson(InputInterface $input){
+    protected function updateInstanceJson(InputInterface $input)
+    {
         if (!$input->getOption('dry-run')) {
-          return file_put_contents("{$this->path}/scout-instance.json", json_encode($this->instance, JSON_PRETTY_PRINT));
-        }else{
-          echo "Would update {$this->path}/scout-instance.json to the following:\n".json_encode($this->instance, JSON_PRETTY_PRINT);
+            return file_put_contents("{$this->path}/scout-instance.json", json_encode($this->instance, JSON_PRETTY_PRINT));
+        } else {
+            echo "Would update {$this->path}/scout-instance.json to the following:\n".json_encode($this->instance, JSON_PRETTY_PRINT);
         }
     }
 
-    protected function getOrigin($originName){
-        if(!count($this->instance->origins)){
+    protected function getOrigin($originName)
+    {
+        if (!count($this->instance->origins)) {
             throw new \Exception("No origins defined.");
         }
-        foreach($this->instance->origins as $origin){
-            if($origin->name == $originName){
+        foreach ($this->instance->origins as $origin) {
+            if ($origin->name == $originName) {
                 return $origin;
             }
         }
         throw new \Exception("Could not find origin '{$originName}'.");
     }
 
-    protected function isCiviCRMInstalled(){
+    protected function isCiviCRMInstalled()
+    {
         return realpath("$this->path/sites/default/civicrm.settings.php");
     }
 }
