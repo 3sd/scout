@@ -50,8 +50,8 @@ echo Installed CiviCRM
 
 {% endif %}
 
-{% include 'SetFilePermissions.twig' %}
-
+{% set vars = {'set_civi_permissions': install_civicrm} %}
+{% include 'SetFilePermissions.twig' with vars %}
 # POST INSTALL CONFIG: DRUPAL
 drush vset date_default_timezone 'Europe/London' -y
 drush vset configurable_timezones 0 -y

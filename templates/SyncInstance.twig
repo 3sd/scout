@@ -12,5 +12,6 @@ drush -r {{path}} vset preprocess_js 0
   mysql -e "create database {{db_name}}_civicrm"
   mysql {{db_name}}_civicrm < {{config.dump_path}}/{{db_name}}_civicrm.sql
 {% endif %}
-{% include 'SetFilePermissions.twig' %}
+{% set vars = {'set_civi_permissions': civicrm_installed} %}
+{% include 'SetFilePermissions.twig' with vars %}
 echo Done

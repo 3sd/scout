@@ -1,5 +1,4 @@
 cd {{ path }}
-{% include 'SetFilePermissions.twig' %}
 echo [SCOUT] Upgrading Drupal
 drush up -y
 {% if civicrm_installed %}
@@ -11,4 +10,5 @@ drush up -y
   echo [SCOUT] Upgrading CiviCRM
   drush civicrm-upgrade-db
 {% endif %}
-{% include 'SetFilePermissions.twig' %}
+{% set vars = {'set_civi_permissions': civicrm_installed} %}
+{% include 'SetFilePermissions.twig' with vars %}

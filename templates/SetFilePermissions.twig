@@ -2,5 +2,9 @@
 cd {{ path }}
 echo [SCOUT] Setting file permissions
 sudo chown -R {{ config.whoami }}:{{ config.httpd_user }} .
-sudo chmod ug+w sites/all/civicrm_extensions sites/default/files/*
-sudo setfacl -R -m user:{{ config.whoami }}:rwX,default:user:{{ config.whoami }}:rwX,user:{{ config.httpd_user }}:rwX,default:user:{{ config.httpd_user }}:rwX sites/default/files sites/all/civicrm_extensions
+sudo chmod ug+w sites/default/files/*
+sudo setfacl -R -m user:{{ config.whoami }}:rwX,default:user:{{ config.whoami }}:rwX,user:{{ config.httpd_user }}:rwX,default:user:{{ config.httpd_user }}:rwX sites/default/files
+{% if set_civi_permissions %}
+sudo chmod ug+w sites/all/civicrm_extensions
+sudo setfacl -R -m user:{{ config.whoami }}:rwX,default:user:{{ config.whoami }}:rwX,user:{{ config.httpd_user }}:rwX,default:user:{{ config.httpd_user }}:rwX sites/all/civicrm_extensions
+{% endif %}
