@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 require __DIR__.'/vendor/autoload.php';
 use Symfony\Component\Console\Application;
@@ -27,7 +27,7 @@ $application->config->set('whoami', trim(`whoami`));
 // $application->config->set('fastcgi_pass', 'unix:/run/php/php5.6-fpm.sock');
 $application->config->set('fastcgi_pass', 'unix:/run/php-fpm/php-fpm.sock');
 // $application->config->set('http_user', trim(`www-data`));
-$application->config->set('httpd_user', 'http');
+$application->config->set('httpd_user', 'buildkit');
 
 
 // - get MySQL credentials
