@@ -1,0 +1,119 @@
+#!/bin/bash
+sites='
+/var/www/3sd
+/var/www/bickleigh
+/var/www/chennaismiles
+/var/www/duncanshields
+/var/www/greenandapples
+/var/www/helenashton
+/var/www/laalmarcha
+/var/www/pluseight
+'
+
+function print_header() {
+  echo
+  echo
+  echo
+  echo "*********** $site ***********"
+  echo
+  echo
+  echo
+}
+
+function confirm() {
+  read -p "Please confirm you would like to proceed (y) " -n 1 CONFIRM
+  echo
+  if [ "$CONFIRM" != "y" ]; then
+    exit
+  fi
+}
+
+usage[1]="Check that the working directory is clean and there is nothing to commit"
+usage[2]="Synchronise and upgrade local sites"
+usage[3]="Commit files that were modified as part of the upgrade"
+usage[4]="Push changes to remote repositories"
+usage[5]="Pull changes to production sites"
+usage[6]="Upgrade production sites"
+usage[list]="List all sites"
+
+
+if [ "$1" ]
+then
+  echo "[$1] ${usage[${1}]}"
+fi
+
+case $1 in
+1) # Check that the working directory is clean and there is nothing to commit"
+  for site in $sites; do
+    print_header
+    git -C $site pull
+    git -C $site status
+  done
+  exit
+  ;;
+2) # Synchronise and upgrade local sites"
+  confirm
+  for site in $sites; do
+    print_header
+    set -x
+    cd $site
+    scout sync prod -i $site
+    scout update -i $site
+    set +x
+  done
+  exit
+  ;;
+3) # Commit modified files that were modified as part of the upgrade"
+  confirm
+  for site in $sites; do
+    print_header
+    echo "Commiting modified files to $site"
+    git -C $site add .
+    git -C $site commit -m 'Site upgraded'
+  done
+  exit
+  ;;
+4) # Push changes to remote repositories"
+  confirm
+  for site in $sites; do
+    print_header
+    echo "Pushing commits for $site"
+    git -C $site push
+  done
+  exit
+  ;;
+5) # Pull changes to production sites"
+  confirm
+  for site in $sites; do
+    echo "Pulling $site on p2"
+    scout pull prod -i $site
+  done
+  exit
+  ;;
+6) # Upgrade production sites"
+  confirm
+  for site in $sites; do
+    ssh p2 drush -r $site cvupdb -y
+    ssh p2 drush -r $site updb -y
+  done
+  exit
+  ;;
+list) # Upgrade production sites"
+  for site in $sites; do
+    echo $site
+  done
+  ;;
+*)
+  echo "Usage: upgrade-sites [argument]
+
+  1     ${usage[1]}
+  2     ${usage[2]}
+  3     ${usage[3]}
+  4     ${usage[4]}
+  5     ${usage[5]}
+  6     ${usage[6]}
+  list  ${usage[list]}
+"
+  exit;
+  ;;
+esac
