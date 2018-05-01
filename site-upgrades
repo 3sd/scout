@@ -68,6 +68,7 @@ case $1 in
   for site in $sites; do
     print_header
     echo "Commiting modified files to $site"
+    git -C $site checkout .gitignore
     git -C $site add .
     git -C $site commit -m 'Site upgraded'
   done
