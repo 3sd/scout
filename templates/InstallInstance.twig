@@ -1,31 +1,31 @@
 # CD TO PROJECT DIRECTORY
 cd {{ path }}
 
-# ADD TO HOSTS FILE
-grep "#scout" /etc/hosts >/dev/null || sudo sed -i -e "\$a\#scout" /etc/hosts
-grep "127.0.0.1 {{ domain }}" /etc/hosts >/dev/null || sudo sed -i "/#scout/a 127.0.0.1 {{ domain }}" /etc/hosts
-#    Maybe add a '$' here --^ to avoid 3sd-wp matching 3sd
-echo Added {{ domain }} to /etc/hosts
-
-# ADD VHOST
-scout generate vhost > /etc/nginx/sites/{{ name }}
-echo Added vhost at /etc/nginx/sites/{{ name }} for http://{{ domain }}
-
-# RESTART NGINX
-sudo systemctl restart nginx
-echo Restarted nginx
+# # ADD TO HOSTS FILE
+# grep "#scout" /etc/hosts >/dev/null || sudo sed -i -e "\$a\#scout" /etc/hosts
+# grep "127.0.0.1 {{ domain }}" /etc/hosts >/dev/null || sudo sed -i "/#scout/a 127.0.0.1 {{ domain }}" /etc/hosts
+# #    Maybe add a '$' here --^ to avoid 3sd-wp matching 3sd
+# echo Added {{ domain }} to /etc/hosts
+#
+# # ADD VHOST
+# scout generate vhost > /etc/nginx/sites/{{ name }}
+# echo Added vhost at /etc/nginx/sites/{{ name }} for http://{{ domain }}
+#
+# # RESTART NGINX
+# sudo systemctl restart nginx
+# echo Restarted nginx
 
 # CREATE DATABASES
 {% for db in dbs_to_create %}
 mysql -e "CREATE DATABASE {{ db }}"
 {% endfor %}
-mysql -e "GRANT ALL PRIVILEGES ON \`{{ db_name }}\_%\`.* TO '{{ db_name }}'@'localhost'  IDENTIFIED BY '{{ mysql_password }}'"
+mysql -e "GRANT ALL PRIVILEGES ON \`{{ db_name }}\_%\`.* TO '{{ db_name }}'@'%'  IDENTIFIED BY '{{ mysql_password }}'"
 echo Created databases
 
 # INSTALL DRUPAL
 chmod u+w sites/default
 drush site-install \
-  --db-url=mysql://{{ db_name }}:{{ mysql_password }}@localhost/{{ db_name }}_drupal \
+  --db-url=mysql://{{ db_name }}:{{ mysql_password }}@mysql/{{ db_name }}_drupal \
   --site-name="{% if attribute(project, 'full-name') %}{{ attribute(project, 'full-name') }}{% else %}{{ name }}{% endif %}" \
   --site-mail={% if attribute(project, 'site-email') %}{{ attribute(project, 'site-email') }}{% else %}{{ config.git_email }}{% endif %} \
   --account-name="{{ config.git_name }}" \

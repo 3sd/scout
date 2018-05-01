@@ -9,4 +9,4 @@ services:
         class: Symfony\Component\Filesystem\Filesystem
     mysql:
         class: mysqli
-        arguments: ['localhost', '%mysql.user%', '%mysql.password%']
+        arguments: ['%mysql.host%', '%mysql.user%', '%mysql.password%']

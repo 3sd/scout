@@ -20,8 +20,8 @@ $application->config->set('instance_path', '/var/www');
 // $application->config->set('civicrm_source_files', ['drupal.tar.gz', 'wordpress.zip', 'joomla.zip', 'l10n.tar.gz']);
 $application->config->set('civicrm_source_files', ['drupal.tar.gz', 'l10n.tar.gz']);
 $application->config->set('github.org', '3sd');
-$application->config->set('git_name', trim(`git config --get user.name`));
-$application->config->set('git_email', trim(`git config --get user.email`));
+$application->config->set('git_name', 'Michael McAndrew');
+$application->config->set('git_email', 'michaelmcandrew@thirdsectordesign.org');
 $application->config->set('whoami', trim(`whoami`));
 //TODO load from a config file
 // $application->config->set('fastcgi_pass', 'unix:/run/php/php5.6-fpm.sock');
@@ -35,6 +35,7 @@ $myCnf = file_get_contents( $_SERVER['HOME'] . '/.my.cnf');
 $invalid = array("!","{","}","~","^");
 $myfile = str_replace($invalid, "", $myCnf);
 $myCnf = parse_ini_string($myCnf,TRUE);
+$application->config->set('mysql.host', $myCnf['client']['host']);
 $application->config->set('mysql.user', $myCnf['client']['user']);
 $application->config->set('mysql.password', $myCnf['client']['password']);
 
@@ -42,6 +43,7 @@ $application->config->set('mysql.password', $myCnf['client']['password']);
 // Dependency injection
 $container = new ContainerBuilder();
 $container->setParameter('root_dir', __DIR__);
+$container->setParameter('mysql.host', $application->config->get('mysql.host'));
 $container->setParameter('mysql.user', $application->config->get('mysql.user'));
 $container->setParameter('mysql.password', $application->config->get('mysql.password'));
 $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
