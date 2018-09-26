@@ -21,4 +21,6 @@ COPY docker/.my.cnf /buildkit/.my.cnf
 
 COPY docker/.gitconfig /buildkit/.gitconfig
 
+COPY docker/apache.conf /etc/apache2/conf-enabled/buildkit.conf
+
 USER root
