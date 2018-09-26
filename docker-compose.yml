@@ -11,14 +11,17 @@ services:
     links:
       - mysql
     ports:
-      - "8090:80"
+      - "8090:8090"
     volumes:
       - /var/www:/var/www
       - /home/michael/.git:/buildkit/.git
       - .:/scout
       - scout:/buildkit/.scout
       - ./.bash_history:/buildkit/.bash_history
+      - ./.amp:/buildkit/.amp
       - /home/michael/.ssh:/buildkit/.ssh
+    restart: always
+
 
   mysql:
     image: mysql:5.7
